@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Messages</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f9f9f9;
+        }
+        h1 { color: #333; }
+        .container { max-width: 900px; margin: 0 auto; }
+
+        form {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            padding: 12px 25px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover { background: #218838; }
+
+        .message-list {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .message {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 10px;
+        }
+        .message:last-child { border-bottom: none; }
+
+        .meta {
+            font-size: 0.85em;
+            color: #666;
+            margin-top: 8px;
+        }
+        .refresh-btn {
+            margin-bottom: 15px;
+            padding: 8px 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💬 Web Messages</h1>
+
+        <!-- Form -->
+        <form id="messageForm">
+            <h2>Add New Message</h2>
+            <input type="text" id="messageInput" placeholder="Digite sua mensagem aqui..." required>
+            <br>
+            <button type="submit">Enviar Mensagem</button>
+        </form>
+
+        <!-- Messages List -->
+        <h2>Todas as Mensagens</h2>
+        <button class="refresh-btn" onclick="loadMessages()">🔄 Refresh</button>
+
+        <div class="message-list" id="messagesList">
+            Carregando mensagens...
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "";   // ← Change if needed
+
+        // Send new message
+        document.getElementById('messageForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const input = document.getElementById('messageInput');
+            const messageText = input.value.trim();
+
+            if (!messageText) return;
+
+            try {
+                const response = await fetch(`${API_URL}/save_message`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: messageText })
+                });
+
+                const result = await response.json();
+
+                if (result.status === "success") {
+                    alert("✅ Mensagem salva com sucesso!");
+                    input.value = '';
+                    loadMessages();
+                } else {
+                    alert("Erro: " + (result.message || "Falha ao salvar"));
+                }
+            } catch (err) {
+                alert("Erro de conexão: " + err);
+            }
+        });
+
+        // Load all messages
+        async function loadMessages() {
+            const listDiv = document.getElementById('messagesList');
+            listDiv.innerHTML = 'Carregando...';
+
+            try {
+                const response = await fetch(`${API_URL}/messages`);
+                const data = await response.json();
+
+                if (data.status === "success") {
+                    if (data.messages.length === 0) {
+                        listDiv.innerHTML = "<p>Nenhuma mensagem encontrada.</p>";
+                        return;
+                    }
+
+                    let html = '';
+                    data.messages.forEach(msg => {
+                        html += `
+                            <div class="message">
+                                <strong>#${msg.id}</strong> - ${msg.message}
+                                <div class="meta">
+                                    UUID: ${msg.uuid}<br>
+                                    Data: ${new Date(msg.created_date).toLocaleString('pt-BR')}
+                                </div>
+                            </div>`;
+                    });
+                    listDiv.innerHTML = html;
+                }
+            } catch (error) {
+                listDiv.innerHTML = `<p style="color: red;">Erro ao carregar mensagens.<br>${error}</p>`;
+            }
+        }
+
+        // Load messages when page opens
+        window.onload = loadMessages;
+    </script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+PGHOST=ep-silent-violet-a26temai-pooler.eu-central-1.aws.neon.tech
+PGDATABASE=pucsp
+PGUSER=pucsp-dba
+PGPASSWORD=zzzzzzzzzzzzzzzz
+PGSSLMODE=require
+PGCHANNELBINDING=require
