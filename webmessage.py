@@ -79,6 +79,7 @@ def database_info():
         <p>Make sure your .env file is correctly loaded.</p>
         """, 500
 
+# TODO: Fix it endpoint /save_message to /message
 @app.route('/save_message', methods=['POST'])
 def save_message():
     try:
@@ -135,6 +136,7 @@ def save_message():
         }), 500
 
 @app.route('/message/<int:message_id>')
+# @app.route('/message/<int:message_id>', methods=['GET'])
 def get_message(message_id):
     try:
         # Force the correct values (good for debugging)
@@ -187,4 +189,14 @@ def get_message(message_id):
             "status": "error",
             "error": str(e),
             "now": str(dt.datetime.now())
-        }), 500
+        }), 500    
+
+@app.route('/message', methods=['PUT'])
+def put_message():
+    return "TODO: Implement PUT method to update existing message by ID, to update the record with the new message text and update the created_date to current timestamp"    
+
+@app.route('/message', methods=['DELETE'])
+def delete_message():
+    return "TODO: Implement DELETE method to remove existing message by ID"    
+# HINT: Do note DELETE entries, just mark them as deleted with a boolean field "is_deleted" in the database and filter
+# them out in the GET endpoints.
