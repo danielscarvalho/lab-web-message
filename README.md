@@ -21,6 +21,10 @@ U  Update  PUT     UPDATE
 D  Delete  DELETE  DELETE
 ```
 
+### Deploy
+- Local: Linux Flask
+- Online: GCP (Google Cloud Platform) serverless Cloud Run (docker)
+
 ### References:
 
 - https://www.pythonanywhere.com/
